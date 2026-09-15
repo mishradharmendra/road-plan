@@ -1,0 +1,113 @@
+{
+  "_meta_note": "PUT _index_template/chunks. Applies to write indexes named chunks-<build-id>; the alias chunks-read is swapped onto a completed build (see infra/terraform/opensearch/README.md). Requires OpenSearch >= 2.17 for mode/compression_level/rescore.",
+  "index_patterns": ["chunks-*"],
+  "priority": 100,
+  "template": {
+    "settings": {
+      "index.knn": true,
+      "index.knn.algo_param.ef_search": 256,
+
+      "index.number_of_shards": 24,
+      "index.number_of_replicas": 1,
+
+      "index.refresh_interval": "60s",
+      "index.translog.durability": "async",
+      "index.codec": "zstd_no_dict",
+
+      "index.mapping.total_fields.limit": 200,
+      "index.max_terms_count": 8192,
+
+      "analysis": {
+        "filter": {
+          "enterprise_ids": {
+            "type": "word_delimiter_graph",
+            "preserve_original": true,
+            "catenate_all": true,
+            "generate_word_parts": true,
+            "generate_number_parts": true,
+            "split_on_numerics": true
+          },
+          "english_stop": { "type": "stop", "stopwords": "_english_" },
+          "english_stemmer": { "type": "stemmer", "language": "light_english" }
+        },
+        "analyzer": {
+          "enterprise_text": {
+            "type": "custom",
+            "tokenizer": "standard",
+            "filter": [
+              "lowercase",
+              "asciifolding",
+              "enterprise_ids",
+              "flatten_graph",
+              "english_stop",
+              "english_stemmer"
+            ]
+          },
+          "enterprise_text_search": {
+            "type": "custom",
+            "tokenizer": "standard",
+            "filter": [
+              "lowercase",
+              "asciifolding",
+              "enterprise_ids",
+              "english_stop",
+              "english_stemmer"
+            ]
+          }
+        }
+      }
+    },
+
+    "mappings": {
+      "dynamic": "strict",
+
+      "properties": {
+        "doc_id": { "type": "keyword" },
+        "parent_id": { "type": "keyword" },
+        "content_hash": { "type": "keyword" },
+
+        "title": {
+          "type": "text",
+          "analyzer": "enterprise_text",
+          "search_analyzer": "enterprise_text_search",
+          "fields": { "raw": { "type": "keyword", "ignore_above": 512 } }
+        },
+
+        "text": {
+          "type": "text",
+          "analyzer": "enterprise_text",
+          "search_analyzer": "enterprise_text_search"
+        },
+
+        "embedding": {
+          "type": "knn_vector",
+          "dimension": 1024,
+          "space_type": "innerproduct",
+          "mode": "on_disk",
+          "compression_level": "32x",
+          "method": {
+            "name": "hnsw",
+            "engine": "faiss",
+            "parameters": {
+              "ef_construction": 256,
+              "m": 32
+            }
+          }
+        },
+
+        "doc_type": { "type": "keyword" },
+        "source_system": { "type": "keyword" },
+        "language": { "type": "keyword" },
+        "version_status": { "type": "keyword" },
+        "superseded_by": { "type": "keyword" },
+        "created_at": { "type": "date" },
+        "ingested_at": { "type": "date" },
+
+        "acl_hash": { "type": "keyword" },
+        "security_labels": { "type": "keyword" },
+
+        "metadata": { "type": "object", "dynamic": false, "enabled": false }
+      }
+    }
+  }
+}

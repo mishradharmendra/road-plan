@@ -1,0 +1,30 @@
+{
+  "name": "retrieval-phase0",
+  "corpus": "../corpus/sample_corpus.jsonl",
+  "queries": "../datasets/golden_retrieval.jsonl",
+
+  "_comment": "Offline default. HashingEmbedder models lexical similarity only — use this config to gate the PIPELINE, and the .http variant with a real embedding endpoint to gate QUALITY.",
+  "embedder": { "type": "hashing", "dim": 256, "bigrams": true },
+
+  "provider": {
+    "type": "memory",
+    "filter_fields": ["doc_type", "source_system", "language", "created_at", "version_status"]
+  },
+  "bootstrap": true,
+
+  "mode": "hybrid",
+  "match_on": "doc",
+  "k_values": [1, 5, 10, 50],
+
+  "gates": {
+    "_comment": "Regression gates, set just under the current baseline. ADR-001 targets recall@50 >= 0.98 once the real embedder and the full 500-1000 query set are in place.",
+    "min": {
+      "recall@50": 0.9,
+      "recall@10": 0.85,
+      "mrr": 0.6
+    },
+    "max": {
+      "latency_p95_ms": 250
+    }
+  }
+}

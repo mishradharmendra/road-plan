@@ -1,0 +1,119 @@
+{
+  "name": "retrieval-phase0",
+  "provider": "memory",
+  "mode": "hybrid",
+  "match_on": "doc",
+  "n_queries": 22,
+  "metrics": {
+    "recall@1": 0.675,
+    "precision@1": 0.6363636363636364,
+    "ndcg@1": 0.7071428571428571,
+    "hit_rate@1": 0.6363636363636364,
+    "recall@5": 1.0,
+    "precision@5": 0.19090909090909092,
+    "ndcg@5": 0.874472590467289,
+    "hit_rate@5": 0.9090909090909091,
+    "recall@10": 1.0,
+    "precision@10": 0.09545454545454546,
+    "ndcg@10": 0.874472590467289,
+    "hit_rate@10": 0.9090909090909091,
+    "recall@50": 1.0,
+    "precision@50": 0.01909090909090909,
+    "ndcg@50": 0.874472590467289,
+    "hit_rate@50": 0.9090909090909091,
+    "mrr": 0.7515151515151516,
+    "latency_p50_ms": 0.2587079943623394,
+    "latency_p95_ms": 0.3157079918310046
+  },
+  "intervals": {
+    "hit_rate@1": [
+      0.4295134934371804,
+      0.802670272273921
+    ],
+    "hit_rate@5": [
+      0.7218461934161421,
+      0.9747051037171622
+    ],
+    "hit_rate@10": [
+      0.7218461934161421,
+      0.9747051037171622
+    ],
+    "hit_rate@50": [
+      0.7218461934161421,
+      0.9747051037171622
+    ]
+  },
+  "slices": {
+    "query_type=lookup": {
+      "n": 13.0,
+      "scored": 13.0,
+      "recall@50": 1.0
+    },
+    "difficulty=medium": {
+      "n": 9.0,
+      "scored": 8.0,
+      "recall@50": 1.0
+    },
+    "hazard=version_sensitive": {
+      "n": 2.0,
+      "scored": 2.0,
+      "recall@50": 1.0
+    },
+    "difficulty=easy": {
+      "n": 9.0,
+      "scored": 8.0,
+      "recall@50": 1.0
+    },
+    "query_type=exact_id": {
+      "n": 2.0,
+      "scored": 2.0,
+      "recall@50": 1.0
+    },
+    "difficulty=hard": {
+      "n": 4.0,
+      "scored": 4.0,
+      "recall@50": 1.0
+    },
+    "hazard=near_duplicate_ids": {
+      "n": 1.0,
+      "scored": 1.0,
+      "recall@50": 1.0
+    },
+    "query_type=reasoning": {
+      "n": 2.0,
+      "scored": 2.0,
+      "recall@50": 1.0
+    },
+    "hazard=vocabulary_mismatch": {
+      "n": 3.0,
+      "scored": 3.0,
+      "recall@50": 1.0
+    },
+    "query_type=comparative": {
+      "n": 1.0,
+      "scored": 1.0,
+      "recall@50": 1.0
+    },
+    "path=deep": {
+      "n": 1.0,
+      "scored": 1.0,
+      "recall@50": 1.0
+    },
+    "query_type=negation": {
+      "n": 1.0,
+      "scored": 1.0,
+      "recall@50": 1.0
+    },
+    "query_type=unanswerable": {
+      "n": 2.0,
+      "scored": 0.0,
+      "recall@50": null
+    },
+    "query_type=filtered": {
+      "n": 1.0,
+      "scored": 1.0,
+      "recall@50": 1.0
+    }
+  },
+  "misses": []
+}

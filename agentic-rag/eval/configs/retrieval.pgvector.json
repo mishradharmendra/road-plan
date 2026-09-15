@@ -1,0 +1,27 @@
+{
+  "name": "retrieval-phase0-pgvector",
+  "corpus": "../corpus/sample_corpus.jsonl",
+  "queries": "../datasets/golden_retrieval.jsonl",
+
+  "_comment": "Portability check (ADR-001 / D8). Load once with `python -m ragkit index --config <this> --create-schema`, then evaluate. Requires PG_DSN and pgvector >= 0.7.",
+  "embedder": { "type": "hashing", "dim": 256, "bigrams": true },
+
+  "provider": {
+    "type": "pgvector",
+    "table": "chunks",
+    "dim": 256,
+    "dsn_env": "PG_DSN",
+    "ef_search": 200,
+    "filter_fields": ["doc_type", "source_system", "language", "created_at", "version_status"]
+  },
+  "bootstrap": false,
+
+  "mode": "hybrid",
+  "match_on": "doc",
+  "k_values": [1, 5, 10, 50],
+
+  "gates": {
+    "min": { "recall@50": 0.9, "mrr": 0.6 },
+    "max": { "latency_p95_ms": 500 }
+  }
+}

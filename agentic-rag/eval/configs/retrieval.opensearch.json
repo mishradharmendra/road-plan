@@ -1,0 +1,36 @@
+{
+  "name": "retrieval-phase0-opensearch",
+  "corpus": "../corpus/sample_corpus.jsonl",
+  "queries": "../datasets/golden_retrieval.jsonl",
+
+  "_comment": "Production shape. Create the index from infra/terraform/opensearch/index/ first, then `python -m ragkit index --config <this>`. Swap the embedder to `http` pointing at the Databricks serving endpoint for real numbers.",
+  "embedder": {
+    "type": "http",
+    "url": "https://REPLACE-ME.cloud.databricks.com/serving-endpoints/bge-large-en",
+    "model": "bge-large-en-v1.5",
+    "dim": 1024,
+    "api_key_env": "EMBEDDINGS_API_KEY",
+    "query_prefix": "Represent this sentence for searching relevant passages: "
+  },
+
+  "provider": {
+    "type": "opensearch",
+    "endpoint": "https://REPLACE-ME.us-west-2.es.amazonaws.com",
+    "index": "chunks-read",
+    "dim": 1024,
+    "ef_search": 256,
+    "auth": { "type": "sigv4", "region": "us-west-2", "service": "es" },
+    "source_fields": ["title", "doc_type", "source_system", "language", "created_at", "version_status", "superseded_by", "parent_id"],
+    "filter_fields": ["doc_type", "source_system", "language", "created_at", "version_status"]
+  },
+  "bootstrap": false,
+
+  "mode": "hybrid",
+  "match_on": "doc",
+  "k_values": [1, 5, 10, 50],
+
+  "gates": {
+    "min": { "recall@50": 0.98, "recall@10": 0.92, "mrr": 0.75 },
+    "max": { "latency_p95_ms": 150 }
+  }
+}
